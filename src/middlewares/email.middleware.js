@@ -1,4 +1,5 @@
 const validateEmail = (req, res, next) => {
+    //nombre
     const { email } = req.body;
 
     if (!email) {

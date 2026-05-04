@@ -12,6 +12,13 @@ const validateEmail = (req, res, next) => {
         return res.status(400).json({ error: 'Invalid email format' });
     }
 
+   if (!password || !password.trim()) {
+        return res.status(400).json({ error: 'Password requerido' });
+    }
+
+
+    
+
     next();
 };
 

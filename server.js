@@ -6,28 +6,24 @@ const authRoutes = require('./src/routes/auth.routes');
 
 const app = express();
 
-app.set('trust proxy',1);
-
+app.set('trust proxy', 1); 
 
 app.use(helmet());
 app.use(express.json());
 
 const authLimiter = rateLimit({
-    windowMs : 15 *60 +1000,
-    max : 10,
-    message: {error: 'Muchos intentos... Intenta mas tarde'},
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Demasiados intentos, espera 15 minutos' },
     standardHeaders: true,
     legacyHeaders: false
-})
-
-app.use('/api/auth', authLimiter ,authRoutes);
-
-app.get((err, req, res, next) =>{
-    res.json({status: 'Auth service running'});
-
 });
 
+app.use('/api/auth', authLimiter, authRoutes);
 
+app.get('/', (req, res) => {
+    res.json({ status: 'Auth service running' });
+});
 
 app.use((err, req, res, next) => {
     console.error(err);

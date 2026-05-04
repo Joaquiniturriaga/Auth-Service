@@ -9,18 +9,6 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(helmet());
 
-app.use((req, res, next) => {
-    console.log('headers:', JSON.stringify(req.headers));
-    next();
-});
-
-app.use(express.json());
-
-app.use((req, res, next) => {
-    console.log('body after json parser:', req.body);
-    next();
-});
-
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,
@@ -29,7 +17,9 @@ const authLimiter = rateLimit({
     legacyHeaders: false
 });
 
-app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/auth', authLimiter);
+app.use(express.json());
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.json({ status: 'Auth service running' });

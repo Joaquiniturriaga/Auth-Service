@@ -19,6 +19,12 @@ const authLimiter = rateLimit({
     legacyHeaders: false
 });
 
+
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - UA: ${req.headers['user-agent']}`);
+    next();
+});
+
 app.use('/api/auth', authLimiter, authRoutes);
 
 app.get('/', (req, res) => {

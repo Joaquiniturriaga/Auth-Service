@@ -16,6 +16,11 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+    console.log('body after json parser:', req.body);
+    next();
+});
+
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,

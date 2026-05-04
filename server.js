@@ -10,15 +10,22 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
+
+
 app.use((req, res, next) => {
-    if (req.headers['transfer-encoding']) {
-        delete req.headers['transfer-encoding'];
-    }
-    next();
+    let data = '';
+    req.on('data', chunk => { data += chunk; });
+    req.on('end', () => {
+        if (data) {
+            try {
+                req.body = JSON.parse(data);
+            } catch {
+                req.body = {};
+            }
+        }
+        next();
+    });
 });
-
-app.use(express.json());
-
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,

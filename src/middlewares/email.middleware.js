@@ -1,6 +1,6 @@
 const validateEmail = (req, res, next) => {
     //nombre
-    const { email } = req.body;
+    const { email, password } = req.body;
 
     if (!email) {
         return res.status(400).json({ error: 'Email is required' });

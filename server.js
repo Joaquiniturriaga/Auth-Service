@@ -6,34 +6,8 @@ const authRoutes = require('./src/routes/auth.routes');
 
 const app = express();
 
-app.set('trust proxy', 1); 
-
+app.set('trust proxy', 1);
 app.use(helmet());
-
-app.use((req, res, next) => {
-    console.log('Content-Type:', req.headers['content-type']);
-    console.log('Transfer-Encoding:', req.headers['transfer-encoding']);
-    next();
-});
-
-app.use(express.json());
-
-app.use((req, res, next) => {
-    let data = '';
-    req.on('data', chunk => { data += chunk; });
-    req.on('end', () => {
-        if (data) {
-            try {
-                req.body = JSON.parse(data);
-            } catch {
-                req.body = {};
-            }
-        }
-        next();
-    });
-});
-
-
 app.use(express.json());
 
 const authLimiter = rateLimit({
@@ -42,12 +16,6 @@ const authLimiter = rateLimit({
     message: { error: 'Demasiados intentos, espera 15 minutos' },
     standardHeaders: true,
     legacyHeaders: false
-});
-
-
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - UA: ${req.headers['user-agent']}`);
-    next();
 });
 
 app.use('/api/auth', authLimiter, authRoutes);

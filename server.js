@@ -9,6 +9,14 @@ const app = express();
 app.set('trust proxy', 1); 
 
 app.use(helmet());
+
+app.use((req, res, next) => {
+    if (req.headers['transfer-encoding']) {
+        delete req.headers['transfer-encoding'];
+    }
+    next();
+});
+
 app.use(express.json());
 
 const authLimiter = rateLimit({

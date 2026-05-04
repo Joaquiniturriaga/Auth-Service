@@ -10,7 +10,13 @@ app.set('trust proxy', 1);
 
 app.use(helmet());
 
+app.use((req, res, next) => {
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('Transfer-Encoding:', req.headers['transfer-encoding']);
+    next();
+});
 
+app.use(express.json());
 
 app.use((req, res, next) => {
     let data = '';
@@ -26,6 +32,10 @@ app.use((req, res, next) => {
         next();
     });
 });
+
+
+app.use(express.json());
+
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10,

@@ -8,6 +8,12 @@ const app = express();
 
 app.set('trust proxy', 1);
 app.use(helmet());
+
+app.use((req, res, next) => {
+    console.log('headers:', JSON.stringify(req.headers));
+    next();
+});
+
 app.use(express.json());
 
 const authLimiter = rateLimit({

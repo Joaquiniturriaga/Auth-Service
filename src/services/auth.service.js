@@ -5,27 +5,16 @@ const config = require('../config');
 
 const SAFE_USER_FIELDS = 'id, email, role, created_at';
 
-const register = async (email, password) => {
-    if (!password || password.length < 8) {
-        throw new Error('La contraseña debe tener al menos 8 caracteres');
+const register = async (req, res) => {
+    console.log('>>> register hit, body:', req.body); 
+    try {
+        const { email, password } = req.body;
+        const user = await authService.register(email, password);
+        res.status(201).json({ user });
+    } catch (error) {
+        console.error('>>> register error:', error.message); 
+        res.status(400).json({ error: error.message });
     }
-
-    const existing = await pool.query(
-        'SELECT id FROM users WHERE email = $1', [email]
-    );
-    if (existing.rows.length > 0) {
-        throw new Error('No se pudo completar el registro');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, config.bcryptRounds);
-
-    const result = await pool.query(
-        `INSERT INTO users (email, password)
-         VALUES ($1, $2)
-         RETURNING ${SAFE_USER_FIELDS}`,
-        [email, hashedPassword]
-    );
-    return result.rows[0]; 
 };
 
 const login = async (email, password) => {

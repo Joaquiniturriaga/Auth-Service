@@ -44,12 +44,12 @@ const login = async (email, password) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new Error(INVALID_MSG);
 
-    const token = jwt.sign(
+    const raw = jwt.sign(
         { id: user.id, email: user.email, role: user.role },
         config.jwtSecret,
         { expiresIn: '1h' }
     );
-    return token;
+    return `AUTH-${raw}`;
 };
 
 module.exports = { register, login };

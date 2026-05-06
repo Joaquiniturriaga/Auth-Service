@@ -37,7 +37,7 @@ const login = async (email, password) => {
     const INVALID_MSG = 'Credenciales inválidas';
 
     if (!user) {
-        await bcrypt.compare(password, '$2a$12$dummyhashparaevitartimingattack00000000000000000000000');
+        await bcrypt.compare(password, '$2b$10$abcdefghijklmnopqrstuuABCDEFGHIJKLMNOPQRSTUVWXYZ012');
         throw new Error(INVALID_MSG);
     }
 

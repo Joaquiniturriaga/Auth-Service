@@ -1,14 +1,30 @@
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const authRoutes = require('./src/routes/auth.routes');
 
 const app = express();
-app.use(express.json());
 
-app.use('/api/auth', authRoutes);
+app.set('trust proxy', 1);
+app.use(helmet());
+app.use(express.json()); // PRIMERO el parser
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Demasiados intentos, espera 15 minutos' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+app.use('/api/auth', authLimiter, (req, res, next) => {
+    console.log('body en ruta:', req.body);
+    next();
+}, authRoutes);
 
 app.get('/', (req, res) => {
-    res.send('Auth service running');
+    res.json({ status: 'Auth service running' });
 });
 
 app.use((err, req, res, next) => {

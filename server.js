@@ -12,10 +12,13 @@ app.use(express.json()); // PRIMERO el parser
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 10,
+    max: 100, 
     message: { error: 'Demasiados intentos, espera 15 minutos' },
     standardHeaders: true,
-    legacyHeaders: false
+    legacyHeaders: false,
+    keyGenerator: (req) => {
+        return req.headers['x-forwarded-for']?.split(',')[0] || req.ip;
+    }
 });
 
 app.use('/api/auth', authLimiter, (req, res, next) => {

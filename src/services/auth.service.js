@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const config = require('../config');
 
-const SAFE_USER_FIELDS = 'id, email, role, created_at';
+const SAFE_USER_FIELDS = 'id, email, role, brigade_id, created_at';
 
 const register = async (email, password) => {
     if (!password || password.length < 8) {
@@ -45,7 +45,7 @@ const login = async (email, password) => {
     if (!valid) throw new Error(INVALID_MSG);
 
     const raw = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { id: user.id, email: user.email, role: user.role, brigade_id: user.brigade_id ?? null },
         config.jwtSecret,
         { expiresIn: '1h' }
     );

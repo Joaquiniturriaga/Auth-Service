@@ -47,12 +47,19 @@ const login = async (email, password) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) throw new Error(INVALID_MSG);
 
-    const raw = jwt.sign(
-        { id: user.id, email: user.email, role: user.role, brigade_id: user.brigade_id ?? null },
-        config.jwtSecret,
-        { expiresIn: '1h' }
-    );
-    return `AUTH-${raw}`;
+ const raw = jwt.sign(
+    { 
+        id: user.id, 
+        email: user.email, 
+        role: user.role, 
+        brigade_id: user.brigade_id !== undefined && user.brigade_id !== null ? user.brigade_id : null
+    },
+    config.jwtSecret,
+    { expiresIn: '1h' }
+);
+
+console.log('JWT PAYLOAD:', { id: user.id, email: user.email, role: user.role, brigade_id: user.brigade_id });
+
 };
 
 module.exports = { register, login };

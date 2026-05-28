@@ -57,9 +57,9 @@ const login = async (email, password) => {
     config.jwtSecret,
     { expiresIn: '1h' }
 );
-
 console.log('JWT PAYLOAD:', { id: user.id, email: user.email, role: user.role, brigade_id: user.brigade_id });
 
+    return `AUTH-${raw}`;
 };
 
 module.exports = { register, login };

@@ -33,6 +33,9 @@ const login = async (email, password) => {
         'SELECT * FROM users WHERE email = $1', [email]
     );
     const user = result.rows[0];
+    
+    console.log('USER FROM DB:', JSON.stringify(user));
+
 
     const INVALID_MSG = 'Credenciales inválidas';
 

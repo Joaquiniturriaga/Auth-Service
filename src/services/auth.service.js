@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const config = require('../config');
+const crypto = require('crypto');
+const { sendPasswordResetEmail } = require('./email.service');
 
 const SAFE_USER_FIELDS = 'id, email, role, brigade_id, created_at';
 
@@ -62,4 +64,45 @@ console.log('JWT PAYLOAD:', { id: user.id, email: user.email, role: user.role, b
     return `AUTH-${raw}`;
 };
 
-module.exports = { register, login };
+const forgotPassword = async (email) => {
+  const result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+
+  // Silencioso: no revela si el email existe o no
+  if (!result.rows[0]) return;
+
+  const token = crypto.randomBytes(32).toString('hex');
+  const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+  await pool.query(
+    'UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3',
+    [token, expires, email]
+  );
+
+  await sendPasswordResetEmail(email, token);
+};
+
+const resetPassword = async (token, newPassword) => {
+  const result = await pool.query(
+    'SELECT id FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()',
+    [token]
+  );
+
+  if (!result.rows[0]) {
+    const err = new Error('Token inválido o expirado');
+    err.status = 400;
+    throw err;
+  }
+
+  const bcrypt = require('bcryptjs');
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  await pool.query(
+    `UPDATE users
+     SET password = $1, reset_token = NULL, reset_token_expires = NULL
+     WHERE id = $2`,
+    [hashedPassword, result.rows[0].id]
+  );
+};
+
+
+module.exports = { register, login, forgotPassword, resetPassword };

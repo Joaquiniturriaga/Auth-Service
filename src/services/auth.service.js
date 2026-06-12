@@ -78,8 +78,9 @@ const forgotPassword = async (email) => {
     [token, expires, email]
   );
 
-  await sendPasswordResetEmail(email, token);
-};
+  sendPasswordResetEmail(email, token).catch(err =>
+    console.error('Error enviando email:', err.message)
+  );};
 
 const resetPassword = async (token, newPassword) => {
   const result = await pool.query(

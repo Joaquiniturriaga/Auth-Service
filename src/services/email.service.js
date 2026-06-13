@@ -9,6 +9,10 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendPasswordResetEmail = async (toEmail, resetToken) => {
+    console.log('>>> Intentando enviar email a:', toEmail);
+  console.log('>>> GMAIL_USER:', process.env.GMAIL_USER);
+  console.log('>>> APP_PASSWORD existe:', !!process.env.GMAIL_APP_PASSWORD);
+
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
   await transporter.sendMail({

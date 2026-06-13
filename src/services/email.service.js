@@ -15,6 +15,19 @@ const sendPasswordResetEmail = async (toEmail, resetToken) => {
 
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
+    try {
+    const info = await transporter.sendMail({
+      from: `"Valle del Sol 🔥" <${process.env.EMAIL_FROM}>`,
+      to: toEmail,
+      subject: 'Recuperar contraseña — Valle del Sol',
+      html: `...`,
+    });
+    console.log('>>> Email enviado OK:', info.messageId); // ← nuevo
+  } catch (err) {
+    console.error('>>> ERROR sendMail:', err.message);    // ← nuevo
+  }
+
+
   await transporter.sendMail({
     from: `"Valle del Sol 🔥" <${process.env.EMAIL_FROM}>`,
     to: toEmail,

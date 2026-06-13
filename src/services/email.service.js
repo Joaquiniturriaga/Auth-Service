@@ -1,20 +1,14 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendPasswordResetEmail = async (toEmail, resetToken) => {
   console.log('>>> Intentando enviar a:', toEmail);
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
   try {
-    const info = await transporter.sendMail({
-      from: `"Valle del Sol 🔥" <${process.env.EMAIL_FROM}>`,
+    const { data, error } = await resend.emails.send({
+      from: 'Valle del Sol <onboarding@resend.dev>',
       to: toEmail,
       subject: 'Recuperar contraseña — Valle del Sol',
       html: `
@@ -31,7 +25,13 @@ const sendPasswordResetEmail = async (toEmail, resetToken) => {
         </div>
       `,
     });
-    console.log('>>> Email enviado OK:', info.messageId);
+
+    if (error) {
+      console.error('>>> ERROR Resend:', error);
+      throw new Error(error.message);
+    }
+
+    console.log('>>> Email enviado OK:', data.id);
   } catch (err) {
     console.error('>>> ERROR sendMail:', err.message);
     throw err;

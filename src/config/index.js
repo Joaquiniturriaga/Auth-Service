@@ -7,5 +7,6 @@ module.exports = {
     FRONTEND_URL: process.env.FRONTEND_URL,
     GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD,
     GMAIL_USER: process.env.GMAIL_USER,
+    RESEND_API_KEY: process.env.RESEND_API_KEY
     
 };

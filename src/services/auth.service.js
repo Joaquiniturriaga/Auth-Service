@@ -67,18 +67,19 @@ console.log('JWT PAYLOAD:', { id: user.id, email: user.email, role: user.role, b
 const forgotPassword = async (email) => {
   const result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
 
-  // Silencioso: no revela si el email existe o no
   if (!result.rows[0]) return;
 
   const token = crypto.randomBytes(32).toString('hex');
-  const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+  const expires = new Date(Date.now() + 60 * 60 * 1000);
 
   await pool.query(
     'UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3',
     [token, expires, email]
   );
 
-  await sendPasswordResetEmail(email, token);
+  sendPasswordResetEmail(email, token).catch(err =>
+    console.error('>>> ERROR sendMail:', err.message)
+  );
 };
 
 const resetPassword = async (token, newPassword) => {

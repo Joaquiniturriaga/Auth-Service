@@ -5,7 +5,9 @@ const config = require('./index');
 
 const pool = new Pool({
     connectionString: config.databaseUrl,
-    ssl: { rejectUnauthorized: false }
+    ssl: process.env.NODE_ENV === 'test'
+        ? false
+        : { rejectUnauthorized: false }
 });
 
 const initDb = async () => {

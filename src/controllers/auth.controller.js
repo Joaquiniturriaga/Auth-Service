@@ -1,4 +1,5 @@
 const authService = require('../services/auth.service');
+const { forgotPassword, resetPassword } = require('../services/auth.service');
 
 const register = async (req, res) => {
     console.log('controller body:', req.body);
@@ -24,5 +25,35 @@ const login = async (req, res) => {
     }
 };
 
+const forgotPasswordHandler = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email requerido' });
 
-module.exports = {register, login};
+    await forgotPassword(email);
+
+    res.json({ message: 'Si el email existe, recibirás un enlace en tu bandeja.' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+const resetPasswordHandler = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword)
+      return res.status(400).json({ error: 'Token y nueva contraseña requeridos' });
+
+    if (newPassword.length < 8)
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
+
+    await resetPassword(token, newPassword);
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+module.exports = {register, login, forgotPasswordHandler, resetPasswordHandler};

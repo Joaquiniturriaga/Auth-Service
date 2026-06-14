@@ -14,7 +14,9 @@
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.11.3"
+    "nodemailer": "^8.0.11",
+    "pg": "^8.11.3",
+    "resend": "^6.12.4"
   },
   "devDependencies": {
     "jest": "^30.4.2",
